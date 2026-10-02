@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>みく</title>
+  <title>みくへ 🤍</title>
 
-  <!-- OpenGraph tags to hide spoilers in chat link previews (LINE, Telegram, WhatsApp) -->
-  <meta property="og:title" content="みくへ">
-  <meta property="og:description" content="しつもんが あります 🤍">
+  <!-- LINE, Telegram and Social Link Preview Meta Tags -->
+  <meta property="og:title" content="みくへ 🤍">
+  <meta property="og:description" content="メッセージが とどいています">
   <meta property="og:type" content="website">
 
   <script src="https://cdn.tailwindcss.com"></script>
@@ -62,12 +62,10 @@
       </button>
     </div>
 
-    <!-- Minimal Confirmation Message (Initially Hidden) -->
+    <!-- Minimal Confirmation Message (Initially Hidden & Empty) -->
     <div id="success-container" class="hidden opacity-0 scale-95 fade-transition flex-col items-center justify-center space-y-4">
       <div class="w-1.5 h-1.5 rounded-full bg-rose-400 mb-2"></div>
-      <h2 class="text-2xl sm:text-3xl font-light tracking-tight text-zinc-900">
-        わーい！きょうから わたしの かのじょだね！へへ
-      </h2>
+      <h2 id="success-text" class="text-2xl sm:text-3xl font-light tracking-tight text-zinc-900"></h2>
       <p class="text-xs tracking-widest text-zinc-400 uppercase font-light">
         🤍
       </p>
@@ -80,6 +78,7 @@
     const yesBtn = document.getElementById('yes-btn');
     const questionContainer = document.getElementById('question-container');
     const successContainer = document.getElementById('success-container');
+    const successText = document.getElementById('success-text');
     const interactiveArea = document.getElementById('interactive-area');
 
     let isFleeing = false;
@@ -115,6 +114,16 @@
 
     // Handle YES click transition
     function handleYesClick() {
+      // Secret text encoded: "わーい！きょうから わたしの かのじょだね！へへ"
+      const encodedSecret = "44oP44O844GE77yB44GN44KH44GG44GL44KJIOC44Gf44GX44GuIOC4gO444444444844Gf44Gt77yB44G444G4";
+      
+      try {
+        const decodedText = decodeURIComponent(escape(atob(encodedSecret)));
+        successText.innerText = decodedText;
+      } catch (e) {
+        successText.innerText = "わーい！きょうから わたしの かのじょだね！へへ";
+      }
+
       // Fade out question and buttons
       questionContainer.style.opacity = '0';
       questionContainer.style.transform = 'translateY(-10px)';
