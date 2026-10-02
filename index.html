@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>みく</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      font-family: 'Inter', 'Noto Sans JP', system-ui, -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      touch-action: manipulation;
+      overflow: hidden;
+    }
+
+    .fade-transition {
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .flee-btn {
+      transition: left 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+  </style>
+</head>
+
+<body class="bg-[#FAF9F6] text-[#1C1C1C] min-h-screen w-screen flex flex-col items-center justify-center p-6 select-none relative overflow-hidden">
+
+  <main class="w-full max-w-sm flex flex-col items-center justify-center text-center space-y-12 z-10">
+    
+    <!-- Question Title -->
+    <div id="question-container" class="fade-transition space-y-3">
+      <p class="text-xs tracking-[0.3em] uppercase text-zinc-400 font-medium">しつもん</p>
+      <h1 id="main-title" class="text-2xl sm:text-3xl font-light tracking-tight text-zinc-800 leading-snug">
+        みく、わたしの かのじょに なってくれる？
+      </h1>
+    </div>
+
+    <!-- Buttons Container -->
+    <div id="interactive-area" class="w-full flex items-center justify-center gap-6 min-h-[52px] relative">
+      <!-- YES Button -->
+      <button id="yes-btn" onclick="handleYesClick()" class="px-8 py-3 bg-zinc-900 hover:bg-zinc-800 active:scale-95 text-zinc-50 text-sm font-medium tracking-wide rounded-full shadow-sm hover:shadow transition-all duration-200">
+        はい
+      </button>
+
+      <!-- NO Button (Fleeing) -->
+      <button id="no-btn" class="flee-btn px-8 py-3 border border-zinc-200 hover:border-zinc-300 text-zinc-500 text-sm font-medium tracking-wide rounded-full bg-white/50 backdrop-blur-sm transition-all duration-200">
+        いいえ
+      </button>
+    </div>
+
+    <!-- Minimal Confirmation Message (Initially Hidden) -->
+    <div id="success-container" class="hidden opacity-0 scale-95 fade-transition flex-col items-center justify-center space-y-4">
+      <div class="w-1.5 h-1.5 rounded-full bg-rose-400 mb-2"></div>
+      <h2 class="text-2xl sm:text-3xl font-light tracking-tight text-zinc-900">
+        わーい！きょうから わたしの かのじょだね！へへ
+      </h2>
+      <p class="text-xs tracking-widest text-zinc-400 uppercase font-light">
+        🤍
+      </p>
+    </div>
+
+  </main>
+
+  <script>
+    const noBtn = document.getElementById('no-btn');
+    const yesBtn = document.getElementById('yes-btn');
+    const questionContainer = document.getElementById('question-container');
+    const successContainer = document.getElementById('success-container');
+    const interactiveArea = document.getElementById('interactive-area');
+
+    let isFleeing = false;
+
+    // Relocate NO button smoothly within padding boundaries
+    function moveNoButton() {
+      if (!isFleeing) {
+        noBtn.style.position = 'fixed';
+        isFleeing = true;
+      }
+
+      const padding = 30;
+      const btnWidth = noBtn.offsetWidth;
+      const btnHeight = noBtn.offsetHeight;
+
+      const maxX = window.innerWidth - btnWidth - padding;
+      const maxY = window.innerHeight - btnHeight - padding;
+
+      const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
+      const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+
+      noBtn.style.left = `${randomX}px`;
+      noBtn.style.top = `${randomY}px`;
+    }
+
+    // Bind event handlers for mobile touch and PC mouse evade
+    ['mouseenter', 'touchstart', 'pointerdown'].forEach(eventType => {
+      noBtn.addEventListener(eventType, (e) => {
+        e.preventDefault();
+        moveNoButton();
+      });
+    });
+
+    // Handle YES click transition
+    function handleYesClick() {
+      // Fade out question and buttons
+      questionContainer.style.opacity = '0';
+      questionContainer.style.transform = 'translateY(-10px)';
+      interactiveArea.style.opacity = '0';
+      interactiveArea.style.transform = 'translateY(10px)';
+      if (noBtn) noBtn.style.opacity = '0';
+
+      setTimeout(() => {
+        questionContainer.classList.add('hidden');
+        interactiveArea.classList.add('hidden');
+        if (noBtn) noBtn.style.display = 'none';
+
+        // Reveal minimalist success text
+        successContainer.classList.remove('hidden');
+        setTimeout(() => {
+          successContainer.classList.remove('opacity-0', 'scale-95');
+          successContainer.classList.add('opacity-100', 'scale-100');
+        }, 50);
+
+        // Subtle, elegant monochrome/rose confetti accent
+        confetti({
+          particleCount: 30,
+          spread: 60,
+          origin: { y: 0.6 },
+          colors: ['#1c1c1c', '#f43f5e', '#e4e4e7'],
+          ticks: 200,
+          gravity: 0.8,
+          scalar: 0.8,
+          disableForReducedMotion: true
+        });
+      }, 500);
+    }
+  </script>
+</body>
+</html>
